@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-
+using namespace std::chrono; 
 #define ll long long
 #define MAX 1000007
 #define INF 1000000000000000LL
@@ -62,12 +62,12 @@ void BUILD(VBT *V, ll x)
 	}
 }
 
-ll VBT_MINM(VBT *V)
+ll VBT_MINM(VBT *&V)
 {
 	return V->minm;
 }
 
-ll VBT_MAXM(VBT *V)
+ll VBT_MAXM(VBT *&V)
 {
 	return V->maxm;
 }
@@ -80,25 +80,25 @@ void insert_empty(VBT *V, ll x)
 
 void insert(VBT *V,ll x)
 {
-	if(V->minm == -1)
+    if(V->minm == -1)
 		insert_empty(V, x);
 	else
 	{
-		if(x < V->minm)
-			swap(x, V->minm);
-		if(V->u > 2)
+    	if(x < V->minm)
+    		swap(x, V->minm);
+    	if(V->u > 2)
 		{
-			ll k = (ll)sqrt(V->u);
+    		ll k = (ll)sqrt(V->u);         
 			if(VBT_MINM(V->cluster[x/k]) == -1)
 			{
-				insert(V->summary, x/k);
+                insert(V->summary, x/k);
 				insert_empty(V->cluster[x/k], x%k);	
 			}
 			else
-				insert(V->cluster[x/k], x%k);
+            	insert(V->cluster[x/k], x%k);
 		}
 		if(x > V->maxm)
-			V->maxm = x;
+        	V->maxm = x;
 	}		
 }	
 
@@ -217,23 +217,83 @@ void deletes(VBT *V, ll x)
 
 int main(int argc, char const *argv[])
 {
-	// freopen("input.txt", "r" , stdin);
-	// freopen("output.txt", "w", stdout);
-	
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);cout.tie(NULL);
 
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);cout.tie(NULL);   
+    freopen("outputvb.txt", "a", stdout);
 	VBT *V = new VBT;
-	VBT *head = V;
-	BUILD(head, 16);
-	insert(head, 2);
-	insert(head ,3);
-	insert(head,4);
-	insert(head,5);
-	insert(head,7);
-	insert(head,14);
-	insert(head,15);
-	print(head);
-
-	return 0;
+    VBT *head = V;
+    BUILD(head, 65536);
+     auto start = high_resolution_clock::now();
+    int n,m,x;
+    cin>>n>>m;
+    vector<vector<pair<int,int>>> v1(100005);
+    vector<vector<pair<int,int>>> v(100005);
+    int visited[100005]={0};
+    int w,y,i;
+    v1[0].push_back({0,0});
+    for(i=0;i<m;i++)
+    {
+        cin>>x>>y>>w;
+        v[x].push_back(make_pair(y,w));
+        v[y].push_back(make_pair(x,w));
+    }
+    int count1=1;
+    insert(V,0);
+    struct node *root1=NULL;
+    int sum=0;
+    while(count1!=n+1)
+    {
+           int temp=VBT_MINM(V);
+           int r=v1[temp][0].first;
+           int s=v1[temp][0].second;
+           bool flag=false;
+           if(visited[r]==0)
+           {
+               int n1=v[r].size();
+               for(i=0;i<n1;i++)
+               {
+                 if(visited[v[r][i].first]==0)
+                 {
+                    v1[v[r][i].second].push_back(make_pair(r,v[r][i].first));
+                    if(v1[v[r][i].second].size()==1)
+                     insert(V, v[r][i].second);
+                }
+               }
+               visited[r]=1;
+               flag=true;
+               
+           }
+           if(visited[s]==0)
+           {
+               int n1=v[s].size();
+               for(i=0;i<n1;i++)
+               {
+                 if(visited[v[s][i].first]==0)
+                 {
+                    v1[v[s][i].second].push_back(make_pair(s,v[s][i].first));
+                    if(v1[v[s][i].second].size()==1)
+                    {
+                    insert(V, v[s][i].second);
+                    }
+                 }
+                 
+               }
+               visited[s]=1;
+               flag=true;
+           }
+           if(flag==true)
+        {
+               sum=sum+temp;
+            count1++;
+        }
+           v1[temp].erase(v1[temp].begin());
+           if(v1[temp].size()==0)
+           deletes(V, temp);
+    }
+    // cout<<sum<<endl;
+    auto stop = high_resolution_clock::now(); 
+    auto duration = duration_cast<microseconds>(stop - start); 
+    cout<<duration.count()<<endl;
+	
 }

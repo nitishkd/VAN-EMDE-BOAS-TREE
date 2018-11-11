@@ -1,4 +1,6 @@
 #include<bits/stdc++.h>
+#define debug(x) cout<<"Checkpoint : "<<x<<endl
+
 using namespace std;
 using namespace std::chrono; 
 int count1=0;
@@ -89,7 +91,7 @@ struct node* insert(struct node *root,int x,int y,int value)
     if(root==NULL)
     {
         struct node *temp;
-    temp=(struct node*)malloc(sizeof(struct node));
+    temp= new node;
     temp->data=value;
     temp->left=NULL;
     temp->right=NULL;
@@ -288,14 +290,16 @@ int main()
     for(i=0;i<m;i++)
     {
         cin>>x>>y>>w;
+        // --x;
+        // --y;
         v[x].push_back(make_pair(y,w));
         v[y].push_back(make_pair(x,w));
     }
-    
     int count1=1;
      struct node *root1=NULL;
      root1=insert(root1,0,0,0);
     int sum=0;
+
     while(count1!=n+1)
     {
            struct node *temp=kthmin(root1,1);
@@ -346,12 +350,12 @@ int main()
            root1=delete1(root1,r,s,temp->data);
            }
     }
+    // cout<<sum<<endl;
     auto stop = high_resolution_clock::now(); 
   
     auto duration = duration_cast<microseconds>(stop - start); 
-  
     
     cout<< duration.count()<< endl; 
-
+    return 0;
 }
 
