@@ -1,4 +1,7 @@
 #!/bin/bash
+rm outputbino.txt
+rm outputavl.txt
+rm outputvb.txt
 
 g++  AVL.cpp -o AVL
 g++  vEB.cpp -o vEB
